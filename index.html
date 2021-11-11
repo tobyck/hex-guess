@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hex Guess</title>
+        <link rel="shortcut icon" type="image/jpg" href="HexGuessIcon.png"/>
+    </head>
+    <style>
+    	@import url('https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap');
+    	.main {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+        }
+        .colour { 
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border-width: 0;
+            border-radius: 20px;
+        }
+        #target, #status {
+            width: 330px;
+            height: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: "Fira Sans";
+            text-align: center;
+            font-size: 25px;      
+        }
+        #target {
+            font-size: 50px;
+        }
+        #box {
+        	display: grid;
+        	grid-template-columns: auto auto auto;
+            width: 330px;
+            height: 330px;
+      		margin-left: auto;
+      		margin-right: auto;
+        }
+        @media screen and (max-width: 1000px) {.colour {width: 200px; height: 200px; border-radius: 50px;} #box {width: 650px; height: 650px;} #status {font-size: 40px; padding-bottom: 50px;padding-top: 10px; width: 300px;} #target {font-size: 80px;}}
+    </style>
+    <body>
+        <div class="main">
+            <p id="target"></p>
+            <p id="status">Take a guess!</p>
+            <div id="box"></div><br>
+        </div>
+    </body>
+    <script>
+    	var codes = [], score = 0, target, timer, newGameVar = false;
+        for (var i = 0; i < 9; i++) {
+        	code = (Math.floor(Math.random()*(16**6))).toString(16);
+            codes.push("0".repeat(6-code.length)+code)
+        }
+        target = codes[Math.floor(Math.random()*9)];
+        document.getElementById("target").innerHTML = "#"+target.toUpperCase()
+        for (var i = 0; i < 9; i++) {
+            if (codes[i] == target) {
+              document.getElementById("box").innerHTML += `<button class="colour" onclick="check('correct')" style="background-color: #${target};"></button>`;
+            } else {
+                document.getElementById("box").innerHTML += `<button onclick="check('wrong')" class="colour" style="background-color: #${codes[i]};"></button>`;
+            }	
+        }
+        function check(x) {
+            function newGame(text) {
+                newGameVar = true;
+                document.getElementById("status").innerHTML = text;
+                setTimeout(function() {document.getElementById("status").innerHTML = "Loading new game..."; location.reload()}, 1500);
+            }
+            if (newGameVar == false) {
+                score += 1;
+                clearTimeout(timer)
+                if (x == "correct") {
+                    if (score == 1) {
+                        newGame("First try!")
+                    } else if (score >= 9) {
+                        newGame("Finally!")
+                    } else {
+                        newGame("Correct!")
+                    }
+                } else {
+                    document.getElementById("status").innerHTML = "Incorrect.";
+                    timer = setTimeout(function() {document.getElementById("status").innerHTML = "Try again.";}, 1000);
+                }
+            }
+        }
+    </script>
+</html>
